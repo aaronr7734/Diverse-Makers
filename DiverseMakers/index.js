@@ -5,9 +5,13 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
+import {getAuth, EmailAuthProvider } from "firebase/auth";
+import {} from 'firebase/firestore';
 import {AppRegistry} from 'react-native';
 import App from './App';
 import {name as appName} from './app.json';
+import * as firebaseui from 'firebaseui';
+
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -26,6 +30,30 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+auth = getAuth();
 const analytics = getAnalytics(app);
 export const db = getFirestore();
 AppRegistry.registerComponent(appName, () => App);
+
+async function main() {
+
+    // FirebaseUI config
+    const uiConfig = {
+        credentialHelper: firebaseui.auth.CredentialHelper.NONE,
+        signInOptions: [
+        // Email / Password Provider.
+        EmailAuthProvider.PROVIDER_ID,
+        ],
+        callbacks: {
+        signInSuccessWithAuthResult: function (authResult, redirectUrl) {
+            // Handle sign-in.
+            // Return false to avoid redirect.
+            return false;
+            },
+        },
+    };
+    const ui = new firebaseui.auth.AuthUI(auth);
+
+}
+
+main();
