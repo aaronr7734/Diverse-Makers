@@ -1,23 +1,26 @@
 import { Text, View, Button } from "react-native";
 import { initializeApp } from 'firebase/app';
 import {getFirestore, collection, getDocs, Firestore, doc, setDoc} from 'firebase/firestore/lite';
+import { PaperProvider } from 'react-native-paper';
 
 export default function Index() {
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Edit app/index.tsx to edit this screen.</Text>
-      <Button
-            onPress={() => addUser(db, "TestUser2", "TestUsername2")}
-            title="Get Users"
-            color="#841584"
-          />
-    </View>
+    <PaperProvider>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Text>Edit app/index.tsx to edit this screen.</Text>
+        <Button
+              onPress={() => addUser(db, "TestUser2", "TestUsername2")}
+              title="Get Users"
+              color="#841584"
+            />
+      </View>
+    </PaperProvider>
   );
 }
 
