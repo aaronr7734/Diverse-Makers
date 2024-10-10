@@ -1,10 +1,11 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import { Image, StyleSheet, Platform, Button } from 'react-native';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { initializeApp } from 'firebase/app';
+import {getFirestore, collection, getDocs, Firestore, doc, setDoc} from 'firebase/firestore/lite';
 
 export default function HomeScreen() {
   return (
@@ -45,6 +46,11 @@ export default function HomeScreen() {
           <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
           <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
           <ThemedText type="defaultSemiBold">app-example</ThemedText>.
+          <Button
+            onPress={() => addUser(db, "TestUser2", "TestUsername2")}
+            title="Get Users"
+            color="#841584"
+          />
         </ThemedText>
       </ThemedView>
     </ParallaxScrollView>
@@ -81,3 +87,21 @@ const firebaseConfig = {
   measurementId: "G-S3PKZDZQ5Z"
 };
 const app = initializeApp(firebaseConfig);
+const db = getFirestore(app); 
+
+async function getUsers(db: Firestore) {
+  const usersCol = collection(db, 'users'); 
+  //const userSnapshot = await getDocs(usersCol); 
+  console.log(usersCol);
+  
+}
+
+async function addUser(db: Firestore, userId: string, usernameToAdd: string) {
+  // create a user in users collection with TestUser doc ID
+  await setDoc(doc(db, 'users', userId), {
+    // set username to test username
+    username: usernameToAdd
+  });
+  
+  
+}
