@@ -3,7 +3,7 @@ import {collection, doc, setDoc} from 'firebase/firestore/lite';
 import { PaperProvider } from 'react-native-paper';
 import { createNativeStackNavigator } from '@react-navigation/native-stack'; 
 import * as React from 'react';
-import login from "./login";
+import Login from "./Login";
 import { FIREBASE_APP, FIREBASE_AUTH, FIREBASE_DB } from "./firebaseConfig";
 
 const Stack = createNativeStackNavigator();
@@ -34,7 +34,7 @@ export default function Index() {
         <Stack.Navigator initialRouteName="login">
           <Stack.Screen
           name = "login"
-          component = {login}
+          component = {Login}
           options={{headerShown: false}}/>
         </Stack.Navigator>
     </PaperProvider>
