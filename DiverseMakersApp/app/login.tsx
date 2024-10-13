@@ -1,65 +1,38 @@
+import React, { useState } from "react";
 import {
   View,
-  Text,
   StyleSheet,
   TextInput,
   KeyboardAvoidingView,
 } from "react-native";
-import React, { useState } from "react";
-import { FIREBASE_AUTH, FIREBASE_DB } from "./firebaseConfig";
 import { ActivityIndicator, Button } from "react-native-paper";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  UserCredential,
-} from "firebase/auth";
-import { doc, setDoc, Timestamp } from "firebase/firestore";
-import User from "./models/User";
+import { signIn, signUp } from "./services/authService";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const auth = FIREBASE_AUTH;
 
-  const signIn = async () => {
+  const handleSignIn = async () => {
     setLoading(true);
-
     try {
-      const response = await signInWithEmailAndPassword(
-        FIREBASE_AUTH,
-        email,
-        password
-      );
-      console.log(response);
+      const response = await signIn(email, password);
+      // TODO: Handle successful sign-in (e.g., navigate to the home screen)
+      console.log("Logged in:", response.user.uid);
     } catch (error: any) {
-      console.log(error);
       alert("Sign in failed: " + error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const signUp = async () => {
+  const handleSignUp = async () => {
     setLoading(true);
     try {
-      // Create the user with Firebase Auth
-      const userCredential: UserCredential =
-        await createUserWithEmailAndPassword(FIREBASE_AUTH, email, password);
-      const user = userCredential.user;
-
-      // Create a user profile in Firestore
-      const userProfile = {
-        userId: user.uid,
-        email: user.email,
-        createdAt: Timestamp.now(),
-      };
-
-      await setDoc(doc(FIREBASE_DB, "users", user.uid), userProfile);
-      console.log("User profile created with ID:", user.uid);
-      alert("Check your email!");
+      const response = await signUp(email, password);
+      // TODO: Handle successful sign-up (e.g., display a welcome message)
+      alert("Account created successfully!");
     } catch (error: any) {
-      console.log(error);
       alert("Sign up failed: " + error.message);
     } finally {
       setLoading(false);
@@ -75,7 +48,7 @@ const Login = () => {
           placeholder="Email"
           autoCapitalize="none"
           onChangeText={(text) => setEmail(text)}
-        ></TextInput>
+        />
 
         <TextInput
           value={password}
@@ -84,15 +57,14 @@ const Login = () => {
           secureTextEntry={true}
           autoCapitalize="none"
           onChangeText={(text) => setPassword(text)}
-        ></TextInput>
+        />
 
         {loading ? (
           <ActivityIndicator size="large" color="0000ff" />
         ) : (
           <>
-            <Button onPress={() => signIn()}>Log In</Button>
-
-            <Button onPress={() => signUp()}>Sign Up</Button>
+            <Button onPress={handleSignIn}>Log In</Button>
+            <Button onPress={handleSignUp}>Sign Up</Button>
           </>
         )}
       </KeyboardAvoidingView>

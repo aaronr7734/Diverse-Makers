@@ -31,12 +31,20 @@ export default class User {
 
   // Method to convert the User instance into an object compatible with Firestore
   toFirestoreFormat() {
-    return {
+    const data: any = {
       userId: this.userId,
       email: this.email,
-      username: this.username,
-      disabilityTags: this.disabilityTags,
       createdAt: this.createdAt,
     };
+
+    if (this.username !== undefined) {
+      data.username = this.username;
+    }
+
+    if (this.disabilityTags !== undefined) {
+      data.disabilityTags = this.disabilityTags;
+    }
+
+    return data;
   }
 }
