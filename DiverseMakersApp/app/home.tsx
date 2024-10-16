@@ -1,5 +1,4 @@
 // HomeScreen.tsx
-
 import { NavigationProp } from '@react-navigation/native';
 import React from 'react';
 import { View, Text, StyleSheet, Button } from 'react-native';
@@ -11,7 +10,6 @@ interface RouterProps {
 
 const HomeScreen = ({ navigation }: RouterProps) => {
   return (
-    
     <View style={styles.container}>
       <Text style={styles.text}>Home Screen</Text>
       <Button

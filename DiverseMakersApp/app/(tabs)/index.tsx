@@ -3,9 +3,9 @@ import { collection, doc, setDoc } from "firebase/firestore/lite";
 import { PaperProvider } from "react-native-paper";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as React from "react";
-import Login from "./login";
-import { FIREBASE_APP, FIREBASE_AUTH, FIREBASE_DB } from "./firebaseConfig";
-import HomeScreen from "./home";
+import Login from "../login";
+import { FIREBASE_APP, FIREBASE_AUTH, FIREBASE_DB } from "../firebaseConfig";
+import HomeScreen from "../home";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged, User } from "firebase/auth";
 
@@ -37,32 +37,15 @@ export default function Index() {
 
   return (
     <PaperProvider>
-      {/* <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Text>Edit app/index.tsx to edit this screen.</Text>
-        <Button
-              onPress={() => addUser(db, "TestUser2", "TestUsername2")}
-              title="Get Users"
-              color="#841584"
-            />
-      </View> */}
-      <Button
-        onPress={() => addUser("TestUser2", "TestUsername2")}
-        title="Get Users"
-        color="#841584"
-      />
+
       <Stack.Navigator initialRouteName="login">
-        {user ? (<Stack.Screen
-          name="login"
+        {user ? (
+          <Stack.Screen
+          name="home"
           component={InsideLayout}
           options={{ headerShown: false }}
         />) : 
-        
+        // if not signed in (user is null), show login screen
         (<Stack.Screen
           name="login"
           component={Login}
