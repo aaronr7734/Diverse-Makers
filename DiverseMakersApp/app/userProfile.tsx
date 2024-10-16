@@ -1,15 +1,33 @@
 // UserProfileScreen.tsx
 
-import React from 'react';
-import { View, Text, Image, StyleSheet, FlatList } from 'react-native';
-import User from './models/User'; // Import the User model
+import React, { useState } from 'react';
+import { View, Text, Image, StyleSheet, FlatList, TextInput, Button } from 'react-native';
+import User from './models/User'; // Import your User model
+import { FIREBASE_DB } from './firebaseConfig'; // Import Firestore configuration
+import { doc, updateDoc } from 'firebase/firestore'; // Import necessary Firestore methods
 
-// Interface for the props that this component will receive
 interface UserProfileProps {
   user: User; // Assume a user instance is passed as a prop
 }
 
 const UserProfileScreen = ({ user }: UserProfileProps) => {
+  const [username, setUsername] = useState(user.username || '');
+  const [isEditing, setIsEditing] = useState(false); // State to control visibility of input field
+
+  const handleSaveUsername = async () => {
+    if (user.userId) {
+      const userDocRef = doc(FIREBASE_DB, 'users', user.userId);
+      try {
+        await updateDoc(userDocRef, { username });
+        alert('Username updated successfully!');
+        setIsEditing(false); // Hide the input field after saving
+      } catch (error) {
+        console.error('Error updating username:', error);
+        alert('Failed to update username.');
+      }
+    }
+  };
+
   return (
     <View style={styles.container}>
       {/* Profile Picture Placeholder */}
@@ -18,8 +36,24 @@ const UserProfileScreen = ({ user }: UserProfileProps) => {
         style={styles.profileImage}
       />
 
-      {/* Username */}
-      <Text style={styles.username}>{user.username || 'No username set'}</Text>
+      {/* Current Username Display */}
+      <Text style={styles.username}>{username || 'No username set'}</Text>
+
+      {/* Button to Change Username */}
+      <Button title="Change Username" onPress={() => setIsEditing(!isEditing)} />
+
+      {/* Conditional rendering of the input field for changing username */}
+      {isEditing && (
+        <>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter new username"
+            value={username}
+            onChangeText={setUsername}
+          />
+          <Button title="Save" onPress={handleSaveUsername} />
+        </>
+      )}
 
       {/* Email */}
       <View style={styles.infoContainer}>
@@ -61,6 +95,14 @@ const styles = StyleSheet.create({
   username: {
     fontSize: 24,
     fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  input: {
+    width: '100%',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    borderRadius: 5,
     marginBottom: 16,
   },
   infoContainer: {
