@@ -5,10 +5,36 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as React from "react";
 import Login from "./login";
 import { FIREBASE_APP, FIREBASE_AUTH, FIREBASE_DB } from "./firebaseConfig";
+import HomeScreen from "./home";
+import { useEffect, useState } from "react";
+import { onAuthStateChanged, User } from "firebase/auth";
 
 const Stack = createNativeStackNavigator();
+const InsideStack = createNativeStackNavigator();
+
+function InsideLayout() {
+  return (
+  <InsideStack.Navigator> 
+
+    <InsideStack.Screen name = "Home" component={HomeScreen} />
+
+  </InsideStack.Navigator>
+  );
+}
 
 export default function Index() {
+
+  const [user, setUser] = useState<User | null >(null);
+
+  // set active user 
+  useEffect(() =>  {
+    onAuthStateChanged(FIREBASE_AUTH, (user) => {
+      console.log('user', user); 
+      setUser(user); 
+    }); 
+
+  }, [])
+
   return (
     <PaperProvider>
       {/* <View
@@ -31,11 +57,18 @@ export default function Index() {
         color="#841584"
       />
       <Stack.Navigator initialRouteName="login">
-        <Stack.Screen
+        {user ? (<Stack.Screen
+          name="login"
+          component={InsideLayout}
+          options={{ headerShown: false }}
+        />) : 
+        
+        (<Stack.Screen
           name="login"
           component={Login}
           options={{ headerShown: false }}
-        />
+        />) }
+        
       </Stack.Navigator>
     </PaperProvider>
   );
