@@ -39,13 +39,14 @@ export default function Index() {
     <PaperProvider>
 
       <Stack.Navigator initialRouteName="login">
+        {/* If user is signed in, show home screen */}
         {user ? (
           <Stack.Screen
           name="home"
           component={InsideLayout}
           options={{ headerShown: false }}
         />) : 
-        // if not signed in (user is null), show login screen
+        // if user not signed in (user is null), show login screen
         (<Stack.Screen
           name="login"
           component={Login}
