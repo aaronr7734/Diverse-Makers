@@ -12,11 +12,7 @@ const HomeScreen = ({ navigation }: RouterProps) => {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Home Screen</Text>
-      <Button
-        onPress={() => FIREBASE_AUTH.signOut()}
-        title="Log Out"
-        color="#841584"
-      />
+
     </View>
   );
 };

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, FlatList, TextInput, Button } from 'react-native';
 import User from './models/User'; // Import your User model
-import { FIREBASE_DB } from './firebaseConfig'; // Import Firestore configuration
+import { FIREBASE_AUTH, FIREBASE_DB } from './firebaseConfig'; // Import Firestore configuration
 import { doc, updateDoc } from 'firebase/firestore'; // Import necessary Firestore methods
 
 interface UserProfileProps {
@@ -73,6 +73,11 @@ const UserProfileScreen = ({ user }: UserProfileProps) => {
         ) : (
           <Text style={styles.noTagsText}>No disability tags available</Text>
         )}
+        <Button
+        onPress={() => FIREBASE_AUTH.signOut()}
+        title="Log Out"
+        color="#841584"
+      />
       </View>
     </View>
   );
