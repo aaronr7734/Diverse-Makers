@@ -73,12 +73,6 @@ const UserProfileScreen = ({ user }: UserProfileProps) => {
         ) : (
           <Text style={styles.noTagsText}>No disability tags available</Text>
         )}
-        {/* Log out button*/}
-        <Button
-        onPress={() => FIREBASE_AUTH.signOut()}
-        title="Log Out"
-        color="#841584"
-      />
       </View>
     </View>
   );
