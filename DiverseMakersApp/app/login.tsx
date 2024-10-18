@@ -7,18 +7,23 @@ import {
 } from "react-native";
 import { ActivityIndicator, Button } from "react-native-paper";
 import { signIn, signUp } from "./services/authService";
+import { useRouter } from "expo-router"; // Import useRouter from expo-router
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const router = useRouter(); // Initialize router
+
   const handleSignIn = async () => {
     setLoading(true);
     try {
       const response = await signIn(email, password);
-      // TODO: Handle successful sign-in (e.g., navigate to the home screen)
       console.log("Logged in:", response.user.uid);
+
+      // Navigate to the tabs after successful login
+      router.replace('/(tabs)'); // Use router.replace for navigation
     } catch (error: any) {
       alert("Sign in failed: " + error.message);
     } finally {
@@ -30,8 +35,10 @@ const Login = () => {
     setLoading(true);
     try {
       const response = await signUp(email, password);
-      // TODO: Handle successful sign-up (e.g., display a welcome message)
       alert("Account created successfully!");
+
+      // Optionally, navigate to the tabs after sign-up
+      router.replace('/(tabs)'); // Use router.replace for navigation
     } catch (error: any) {
       alert("Sign up failed: " + error.message);
     } finally {
@@ -60,7 +67,7 @@ const Login = () => {
         />
 
         {loading ? (
-          <ActivityIndicator size="large" color="0000ff" />
+          <ActivityIndicator size="large" color="#0000ff" />
         ) : (
           <>
             <Button onPress={handleSignIn}>Log In</Button>

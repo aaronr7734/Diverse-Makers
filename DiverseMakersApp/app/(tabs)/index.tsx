@@ -58,6 +58,7 @@ export default function Index() {
   );
 }
 
+
 async function getUsers() {
   const usersCol = collection(FIREBASE_DB, "users");
   //const userSnapshot = await getDocs(usersCol);

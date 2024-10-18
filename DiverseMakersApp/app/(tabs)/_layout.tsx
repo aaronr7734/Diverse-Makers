@@ -4,6 +4,7 @@ import React from 'react';
 
 export default function TabLayout() {
   return (
+    
     <Tabs>
       {/* Home Tab */}
       <Tabs.Screen
@@ -24,6 +25,18 @@ export default function TabLayout() {
           title: 'Profile',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person-outline" color={color} size={size} />
+          ),
+        }}
+      />
+
+
+      {/* Settings Tab */}
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: 'Settings',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="settings-outline" color={color} size={size} />
           ),
         }}
       />
