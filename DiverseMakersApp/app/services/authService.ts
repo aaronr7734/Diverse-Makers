@@ -4,27 +4,58 @@ import {
   signInWithEmailAndPassword,
   UserCredential,
 } from "firebase/auth";
-import { doc, setDoc, Timestamp } from "firebase/firestore";
+import { doc, setDoc, getDoc, Timestamp } from "firebase/firestore";
 import User from "../models/User";
 
-// Sign In Function
-export const signIn = async (email: string, password: string) => {
+/**
+ * Sign In Function
+ * Authenticates a user and retrieves their profile from Firestore.
+ * @param email - User's email address.
+ * @param password - User's password.
+ * @returns A Promise that resolves to a User instance.
+ */
+export const signIn = async (
+  email: string,
+  password: string
+): Promise<User> => {
   try {
-    const response = await signInWithEmailAndPassword(
+    // Authenticate user with Firebase Auth
+    const userCredential: UserCredential = await signInWithEmailAndPassword(
       FIREBASE_AUTH,
       email,
       password
     );
-    console.log("Sign In Successful:", response);
-    return response;
+
+    const user = userCredential.user;
+
+    // Fetch user profile from Firestore
+    const userDocRef = doc(FIREBASE_DB, "users", user.uid);
+    const userDoc = await getDoc(userDocRef);
+
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      const userProfile = User.fromFirestore(userData);
+      return userProfile;
+    } else {
+      throw new Error("No user profile found in Firestore.");
+    }
   } catch (error: any) {
     console.error("Sign In Error:", error);
     throw error; // Re-throw the error to be handled by the caller
   }
 };
 
-// Sign Up Function
-export const signUp = async (email: string, password: string) => {
+/**
+ * Sign Up Function
+ * Creates a new user, initializes their profile in Firestore, and returns the User instance.
+ * @param email - User's email address.
+ * @param password - User's password.
+ * @returns A Promise that resolves to a User instance.
+ */
+export const signUp = async (
+  email: string,
+  password: string
+): Promise<User> => {
   try {
     // Create the user with Firebase Auth
     const userCredential: UserCredential = await createUserWithEmailAndPassword(
@@ -34,19 +65,23 @@ export const signUp = async (email: string, password: string) => {
     );
     const user = userCredential.user;
 
-    // Create a user profile in Firestore
+    // Initialize user profile with the updated User model
     const userProfile = new User({
       userId: user.uid,
       email: user.email || "",
+      username: "", // Initialize with empty string or collect from additional sign-up fields
+      disabilityTags: [], // Initialize with empty array or collect from additional sign-up fields
+      createdAt: Timestamp.now(),
     });
 
+    // Store user profile in Firestore
     await setDoc(
       doc(FIREBASE_DB, "users", user.uid),
       userProfile.toFirestoreFormat()
     );
 
     console.log("User profile created with ID:", user.uid);
-    return userCredential;
+    return userProfile;
   } catch (error: any) {
     console.error("Sign Up Error:", error);
     throw error; // Re-throw the error to be handled by the caller
