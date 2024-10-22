@@ -8,6 +8,7 @@ import {
   getDocs,
   updateDoc,
   deleteDoc,
+  Timestamp,
 } from "firebase/firestore";
 import Activity from "../models/Activity";
 
@@ -17,20 +18,15 @@ export class ActivityService {
    * @param activity The Activity instance to add.
    */
   public static async addActivity(activity: Activity): Promise<void> {
-    // Serialize the activity, excluding activityId
     const data = activity.toFirestoreFormat();
-    delete data.activityId; // Remove activityId since Firestore will generate it
+    delete data.activityId;
 
-    // Add the activity data to Firestore
     const docRef = await addDoc(collection(FIREBASE_DB, "activities"), data);
 
-    // Get the generated document ID
     const generatedId = docRef.id;
 
-    // Update the activity's activityId property
     activity.setActivityId(generatedId);
 
-    // Update the activityId field in Firestore
     await updateDoc(docRef, { activityId: generatedId });
   }
 
@@ -44,20 +40,24 @@ export class ActivityService {
 
     if (docSnap.exists()) {
       const data = docSnap.data();
-      // Create an Activity instance from the retrieved data
+
+      const timestamp =
+        data.timestamp instanceof Timestamp
+          ? data.timestamp
+          : Timestamp.fromDate(new Date(data.timestamp));
+
       const activity = new Activity({
         activityId: data.activityId,
         title: data.title,
         description: data.description,
-        tags: data.tags,
-        instructions: data.instructions,
+        tags: data.tags || [],
+        instructions: data.instructions || [],
         createdBy: data.createdBy,
-        coverImageUrl: data.coverImageUrl,
-        coverImageAltText: data.coverImageAltText,
+        coverImageUrl: data.coverImageUrl || undefined,
+        coverImageAltText: data.coverImageAltText || undefined,
+        timestamp: timestamp,
+        commentCount: data.commentCount || 0,
       });
-      // Set timestamp and commentCount
-      activity.setTimestamp(data.timestamp);
-      activity.setCommentCount(data.commentCount);
 
       return activity;
     } else {
@@ -71,21 +71,27 @@ export class ActivityService {
   public static async getAllActivities(): Promise<Activity[]> {
     const querySnapshot = await getDocs(collection(FIREBASE_DB, "activities"));
     const activities: Activity[] = [];
+
     querySnapshot.forEach((doc) => {
       const data = doc.data();
+
+      const timestamp =
+        data.timestamp instanceof Timestamp
+          ? data.timestamp
+          : Timestamp.fromDate(new Date(data.timestamp));
+
       const activity = new Activity({
         activityId: data.activityId,
         title: data.title,
         description: data.description,
-        tags: data.tags,
-        instructions: data.instructions,
+        tags: data.tags || [],
+        instructions: data.instructions || [],
         createdBy: data.createdBy,
-        coverImageUrl: data.coverImageUrl,
-        coverImageAltText: data.coverImageAltText,
+        coverImageUrl: data.coverImageUrl || undefined,
+        coverImageAltText: data.coverImageAltText || undefined,
+        timestamp: timestamp,
+        commentCount: data.commentCount || 0,
       });
-      // Set timestamp and commentCount
-      activity.setTimestamp(data.timestamp);
-      activity.setCommentCount(data.commentCount);
 
       activities.push(activity);
     });

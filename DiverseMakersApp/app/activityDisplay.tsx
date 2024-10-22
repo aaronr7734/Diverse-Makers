@@ -1,5 +1,12 @@
 import React, { useContext } from "react";
-import { View, StyleSheet, Linking, Image, ScrollView } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Linking,
+  Image,
+  ScrollView,
+  AccessibilityInfo,
+} from "react-native";
 import {
   Card,
   Title,
@@ -7,9 +14,10 @@ import {
   Button,
   Divider,
   Headline,
+  useTheme,
 } from "react-native-paper";
 import Activity from "./models/Activity";
-import { UserSettingsContext } from "./contexts/UserSettingsContext";
+import { UserSettingsContext } from "../contexts/UserSettingsContext";
 
 type ActivityDisplayProps = {
   activity: Activity;
@@ -17,6 +25,7 @@ type ActivityDisplayProps = {
 
 const ActivityDisplay: React.FC<ActivityDisplayProps> = ({ activity }) => {
   const { settings } = useContext(UserSettingsContext);
+  const theme = useTheme();
 
   const styles = StyleSheet.create({
     scrollView: {
@@ -74,10 +83,10 @@ const ActivityDisplay: React.FC<ActivityDisplayProps> = ({ activity }) => {
     },
     mediaButton: {
       marginVertical: 8,
-      backgroundColor: settings.highContrast ? "#fff" : "#6200ee",
+      backgroundColor: settings.highContrast ? "#fff" : theme.colors.primary,
     },
     mediaButtonLabel: {
-      color: settings.highContrast ? "#000" : "#fff",
+      color: settings.highContrast ? "#000" : theme.colors.onPrimary,
     },
   });
 
@@ -109,25 +118,25 @@ const ActivityDisplay: React.FC<ActivityDisplayProps> = ({ activity }) => {
           <Title style={styles.instructionsTitle} accessibilityRole="header">
             Instructions
           </Title>
-          {activity.getInstructions().map((step, index) => (
-            <View key={index} style={styles.stepContainer}>
+          {activity.getInstructions().map((step) => (
+            <View key={step.id} style={styles.stepContainer}>
               {/* Step Number */}
               <Title style={styles.stepTitle} accessibilityRole="header">
                 Step {step.stepNumber}
               </Title>
               {/* Content Blocks */}
-              {step.contentBlocks.map((block, idx) => {
+              {step.contentBlocks.map((block) => {
                 switch (block.type) {
                   case "text":
                     return (
-                      <Paragraph key={idx} style={styles.textBlock}>
+                      <Paragraph key={block.id} style={styles.textBlock}>
                         {block.content}
                       </Paragraph>
                     );
                   case "image":
                     return (
                       <Image
-                        key={idx}
+                        key={block.id}
                         source={{ uri: block.url }}
                         style={styles.imageBlock}
                         accessible
@@ -139,15 +148,21 @@ const ActivityDisplay: React.FC<ActivityDisplayProps> = ({ activity }) => {
                   case "link":
                     return (
                       <Button
-                        key={idx}
+                        key={block.id}
                         mode="contained"
-                        onPress={() => Linking.openURL(block.url)}
+                        onPress={() => {
+                          Linking.openURL(block.url);
+                          AccessibilityInfo.announceForAccessibility(
+                            `Opening ${block.type}`
+                          );
+                        }}
                         style={styles.mediaButton}
                         labelStyle={styles.mediaButtonLabel}
                         accessible
                         accessibilityLabel={
                           block.description || `Open ${block.type}`
                         }
+                        accessibilityHint={`Opens ${block.type} in browser`}
                       >
                         {block.description || `Open ${block.type}`}
                       </Button>

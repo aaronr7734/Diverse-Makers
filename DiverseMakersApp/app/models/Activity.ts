@@ -1,51 +1,56 @@
 import { Timestamp } from "firebase/firestore";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * Represents a content block within an instruction step.
- * Each content block has a type and contains content relevant to that type.
- * It also includes the user who added it and the disabilities it applies to.
  */
-export type InstructionContentBlock =
-  | {
-      type: "text";
-      content: string;
-      addedBy: string; // User ID of the contributor
-      applicableDisabilities: string[]; // e.g., ['visual'], ['all']
-    }
-  | {
-      type: "image";
-      url: string;
-      altText: string;
-      addedBy: string;
-      applicableDisabilities: string[];
-    }
-  | {
-      type: "video" | "audio" | "link";
-      url: string;
-      description?: string;
-      addedBy: string;
-      applicableDisabilities: string[];
-    };
 
+export type InstructionContentBlock =
+  | TextContentBlock
+  | ImageContentBlock
+  | MediaContentBlock;
+
+interface BaseContentBlock {
+  id: string;
+  type: string;
+  addedBy: string;
+  applicableDisabilities: string[];
+}
+
+interface TextContentBlock extends BaseContentBlock {
+  type: "text";
+  content: string;
+}
+
+interface ImageContentBlock extends BaseContentBlock {
+  type: "image";
+  url: string;
+  altText: string;
+}
+
+interface MediaContentBlock extends BaseContentBlock {
+  type: "video" | "audio" | "link";
+  url: string;
+  description?: string;
+}
 /**
  * Represents a step in the activity instructions.
- * Each step has a step number and an array of content blocks.
  */
-interface InstructionStep {
-  stepNumber: number; // Position in the sequence
+export interface InstructionStep {
+  id: string;
+  stepNumber: number;
   contentBlocks: InstructionContentBlock[];
 }
 
 /**
  * The instructions consist of an array of instruction steps.
  */
-type Instructions = InstructionStep[];
+export type Instructions = InstructionStep[];
 
 /**
  * Represents an activity in the application.
  */
 export default class Activity {
-  // Private properties
   private activityId: string;
   private title: string;
   private description: string;
@@ -61,7 +66,7 @@ export default class Activity {
    * Creates a new Activity instance.
    */
   constructor({
-    activityId,
+    activityId = "",
     title,
     description,
     tags = [],
@@ -69,8 +74,10 @@ export default class Activity {
     createdBy,
     coverImageUrl,
     coverImageAltText,
+    timestamp = Timestamp.now(),
+    commentCount = 0,
   }: {
-    activityId: string;
+    activityId?: string;
     title: string;
     description: string;
     tags?: string[];
@@ -78,14 +85,14 @@ export default class Activity {
     createdBy: string;
     coverImageUrl?: string;
     coverImageAltText?: string;
+    timestamp?: Timestamp;
+    commentCount?: number;
   }) {
     // Validate required fields
-
     if (!title) throw new Error("title is required");
     if (!description) throw new Error("description is required");
     if (!createdBy) throw new Error("createdBy is required");
 
-    // If coverImageUrl is provided, coverImageAltText must also be provided
     if (coverImageUrl && !coverImageAltText) {
       throw new Error(
         "coverImageAltText is required when coverImageUrl is provided"
@@ -96,12 +103,21 @@ export default class Activity {
     this.title = title;
     this.description = description;
     this.tags = tags;
-    this.instructions = instructions;
     this.createdBy = createdBy;
     this.coverImageUrl = coverImageUrl;
     this.coverImageAltText = coverImageAltText;
-    this.timestamp = Timestamp.now();
-    this.commentCount = 0;
+    this.timestamp = timestamp;
+    this.commentCount = commentCount;
+
+    // Initialize instructions with IDs
+    this.instructions = instructions.map((step) => ({
+      ...step,
+      id: step.id || uuidv4(),
+      contentBlocks: step.contentBlocks.map((block) => ({
+        ...block,
+        id: block.id || uuidv4(),
+      })),
+    }));
   }
 
   // Getter methods
@@ -125,15 +141,11 @@ export default class Activity {
     return this.instructions;
   }
 
-  /**
-   * Retrieves the instructions filtered by the specified disability type.
-   */
-
   public getInstructionsForDisability(
     ...disabilityTypes: string[]
   ): InstructionStep[] {
     return this.instructions.map((step) => ({
-      stepNumber: step.stepNumber,
+      ...step,
       contentBlocks: step.contentBlocks.filter(
         (block) =>
           block.applicableDisabilities.includes("all") ||
@@ -185,6 +197,22 @@ export default class Activity {
     this.description = description;
   }
 
+  public setTags(tags: string[]): void {
+    this.tags = tags;
+  }
+
+  public setInstructions(instructions: Instructions): void {
+    // Initialize instructions with IDs
+    this.instructions = instructions.map((step) => ({
+      ...step,
+      id: step.id || uuidv4(),
+      contentBlocks: step.contentBlocks.map((block) => ({
+        ...block,
+        id: block.id || uuidv4(),
+      })),
+    }));
+  }
+
   public setCommentCount(commentCount: number): void {
     this.commentCount = commentCount;
   }
@@ -203,12 +231,14 @@ export default class Activity {
     this.tags = this.tags.filter((t) => t !== tag);
   }
 
+  public incrementCommentCount(): void {
+    this.commentCount += 1;
+  }
+
   /**
    * Adds content blocks to a specified step.
    * If the step exists, it appends the content blocks to it.
    * If the step doesn't exist, it creates the step with the provided content blocks.
-   * @param stepNumber The step number to add content blocks to.
-   * @param contentBlocks One or more content blocks to add.
    */
   public addContentBlocksToStep(
     stepNumber: number,
@@ -218,31 +248,29 @@ export default class Activity {
       throw new Error("Invalid step number");
     }
 
-    // Ensure contentBlocks is an array
     const blocks = Array.isArray(contentBlocks)
       ? contentBlocks
       : [contentBlocks];
 
-    // Find the step
+    blocks.forEach((block) => {
+      if (!block.id) {
+        block.id = uuidv4();
+      }
+    });
+
     let step = this.instructions.find((s) => s.stepNumber === stepNumber);
 
     if (step) {
-      // Step exists, add contentBlocks
       step.contentBlocks.push(...blocks);
     } else {
-      // Step does not exist, create it
       this.instructions.push({
+        id: uuidv4(),
         stepNumber: stepNumber,
         contentBlocks: blocks,
       });
 
-      // Ensure the instructions are sorted by stepNumber
       this.instructions.sort((a, b) => a.stepNumber - b.stepNumber);
     }
-  }
-
-  public incrementCommentCount(): void {
-    this.commentCount += 1;
   }
 
   /**
@@ -250,11 +278,48 @@ export default class Activity {
    */
   public toFirestoreFormat(): any {
     return {
-      activityId: this.activityId,
+      activityId: this.activityId || null,
       title: this.title,
       description: this.description,
       tags: this.tags,
-      instructions: this.instructions,
+      instructions: this.instructions.map((step) => ({
+        id: step.id,
+        stepNumber: step.stepNumber,
+        contentBlocks: step.contentBlocks.map((block) => {
+          const baseBlock = {
+            id: block.id,
+            type: block.type,
+            addedBy: block.addedBy,
+            applicableDisabilities: block.applicableDisabilities,
+          };
+
+          if (block.type === "text") {
+            return {
+              ...baseBlock,
+              content: block.content,
+            };
+          } else if (block.type === "image") {
+            return {
+              ...baseBlock,
+              url: block.url,
+              altText: block.altText,
+            };
+          } else if (
+            block.type === "video" ||
+            block.type === "audio" ||
+            block.type === "link"
+          ) {
+            return {
+              ...baseBlock,
+              url: block.url,
+              description: block.description || null,
+            };
+          } else {
+            // In case of an unexpected block type
+            return baseBlock;
+          }
+        }),
+      })),
       createdBy: this.createdBy,
       coverImageUrl: this.coverImageUrl || null,
       coverImageAltText: this.coverImageAltText || null,

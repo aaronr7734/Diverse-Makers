@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from "react";
-import { FIREBASE_DB, FIREBASE_AUTH } from "../firebaseConfig";
+import { FIREBASE_DB, FIREBASE_AUTH } from "../app/firebaseConfig";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 
 interface UserSettings {
@@ -13,7 +13,7 @@ interface UserSettingsContextProps {
 }
 
 export const UserSettingsContext = createContext<UserSettingsContextProps>({
-  settings: { fontSize: 14, highContrast: false },
+  settings: { fontSize: 16, highContrast: false },
   updateSettings: () => {},
 });
 
@@ -21,7 +21,7 @@ export const UserSettingsProvider: React.FC<React.PropsWithChildren<{}>> = ({
   children,
 }) => {
   const [settings, setSettings] = useState<UserSettings>({
-    fontSize: 14,
+    fontSize: 16,
     highContrast: false,
   });
 
@@ -34,7 +34,7 @@ export const UserSettingsProvider: React.FC<React.PropsWithChildren<{}>> = ({
         if (userDoc.exists()) {
           const userData = userDoc.data();
           setSettings({
-            fontSize: userData.fontSize || 14,
+            fontSize: userData.fontSize || 16,
             highContrast: userData.highContrast || false,
           });
         }
@@ -48,11 +48,12 @@ export const UserSettingsProvider: React.FC<React.PropsWithChildren<{}>> = ({
       ...prevSettings,
       ...newSettings,
     }));
-    // Optionally update settings in Firestore
     const currentUser = FIREBASE_AUTH.currentUser;
     if (currentUser) {
       const userDocRef = doc(FIREBASE_DB, "users", currentUser.uid);
-      updateDoc(userDocRef, newSettings);
+      updateDoc(userDocRef, newSettings).catch((error) => {
+        console.error("Error updating user settings: ", error);
+      });
     }
   };
 

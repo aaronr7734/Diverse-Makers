@@ -1,24 +1,38 @@
 import React, { useContext } from "react";
-import { View, StyleSheet, Image } from "react-native";
-import { Text, Button } from "react-native-paper";
-import User from "../models/User";
-import { UserSettingsContext } from "../contexts/UserSettingsContext";
-import { useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../RootNavigator";
+import { View, StyleSheet, Image, Pressable } from "react-native";
+import { Text } from "react-native-paper";
+import { UserSettingsContext } from "../../../contexts/UserSettingsContext";
+import { AuthContext } from "../../../contexts/AuthContext";
+import { useRouter } from "expo-router";
 
-type EditProfileScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  "EditProfile"
->;
-
-const UserProfileScreen: React.FC<{ user: User }> = ({ user }) => {
+const UserProfileScreen: React.FC = () => {
   const { settings } = useContext(UserSettingsContext);
-  const navigation = useNavigation<EditProfileScreenNavigationProp>();
+  const { user } = useContext(AuthContext);
+  const router = useRouter();
 
-  const handleEditProfile = () => {
-    navigation.navigate("EditProfile", { user });
-  };
+  if (!user) {
+    return (
+      <View
+        style={[
+          styles.centeredContainer,
+          { backgroundColor: settings.highContrast ? "#000" : "#fff" },
+        ]}
+      >
+        <Text
+          style={[
+            styles.errorText,
+            {
+              fontSize: settings.fontSize,
+              color: settings.highContrast ? "#fff" : "#000",
+            },
+          ]}
+          accessibilityRole="alert"
+        >
+          User not found.
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View
@@ -29,7 +43,7 @@ const UserProfileScreen: React.FC<{ user: User }> = ({ user }) => {
     >
       {/* Profile Image */}
       <Image
-        source={require("../assets/default-profile.png")} // Currently set to Diverse Makers logo.
+        source={require("../../assets/default-profile.png")} // Adjust the path as needed
         style={styles.profileImage}
         accessible
         accessibilityLabel="Profile Picture"
@@ -56,13 +70,14 @@ const UserProfileScreen: React.FC<{ user: User }> = ({ user }) => {
             color: settings.highContrast ? "#fff" : "#555",
           },
         ]}
+        accessibilityRole="text"
       >
         {user.email}
       </Text>
       {/* Disability Tags */}
       {user.disabilityTags && user.disabilityTags.length > 0 ? (
         <View style={styles.tagsContainer}>
-          {user.disabilityTags.map((tag, index) => (
+          {user.disabilityTags.map((tag: string, index: number) => (
             <Text
               key={index}
               style={[
@@ -89,37 +104,56 @@ const UserProfileScreen: React.FC<{ user: User }> = ({ user }) => {
               color: settings.highContrast ? "#fff" : "#555",
             },
           ]}
+          accessibilityRole="text"
         >
           No Disability Tags
         </Text>
       )}
       {/* Edit Profile Button */}
-      <Button
-        mode="contained"
-        onPress={handleEditProfile}
+      <Pressable
         style={[
           styles.editButton,
-          { backgroundColor: settings.highContrast ? "#fff" : "#6200ee" },
+          {
+            backgroundColor: settings.highContrast ? "#fff" : "#6200ee",
+            borderColor: settings.highContrast ? "#fff" : "#6200ee",
+          },
         ]}
-        contentStyle={{ height: 48 }}
-        labelStyle={{
-          color: settings.highContrast ? "#000" : "#fff",
-          fontSize: settings.fontSize,
-        }}
+        onPress={() => router.push("/profile/edit")}
         accessible
+        accessibilityRole="button"
         accessibilityLabel="Edit Profile"
       >
-        Edit Profile
-      </Button>
+        <Text
+          style={{
+            color: settings.highContrast ? "#000" : "#fff",
+            fontSize: settings.fontSize,
+            textAlign: "center",
+            paddingVertical: 12,
+          }}
+        >
+          Edit Profile
+        </Text>
+      </Pressable>
     </View>
   );
 };
+
+export default UserProfileScreen;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
     padding: 16,
+  },
+  centeredContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 16,
+  },
+  errorText: {
+    textAlign: "center",
   },
   profileImage: {
     width: 120,
@@ -128,12 +162,6 @@ const styles = StyleSheet.create({
     marginVertical: 16,
     borderWidth: 2,
     borderColor: "#6200ee",
-    // Optional Shadow for better visibility
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    elevation: 5,
   },
   username: {
     fontWeight: "bold",
@@ -162,8 +190,5 @@ const styles = StyleSheet.create({
     width: "80%",
     borderRadius: 4,
     borderWidth: 1,
-    borderColor: "#6200ee",
   },
 });
-
-export default UserProfileScreen;
