@@ -4,6 +4,7 @@ import { FIREBASE_AUTH } from "./firebaseConfig";  // Import Firebase authentica
 import { onAuthStateChanged } from "firebase/auth";  // Firebase method to listen to auth changes
 import { View, ActivityIndicator } from "react-native";
 import { FontSizeProvider } from '@/contexts/FontSizeContext';
+import { ContrastProvider } from '@/contexts/ContrastContext';
 import { ThemedText } from '@/components/ThemedText'; // Import ThemedText
 
 export default function RootLayout() {
@@ -29,29 +30,31 @@ export default function RootLayout() {
     return () => unsubscribe();
   }, []);
 
-  // Wrap the loading state in FontSizeProvider as well
+  // Wrap the loading state in both providers
   if (isAuthenticated === null) {
     return (
-      <FontSizeProvider>
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-          <ActivityIndicator size="large" color="#0000ff" />
-          <ThemedText>Checking Authentication...</ThemedText>
-        </View>
-      </FontSizeProvider>
+      <ContrastProvider>
+        <FontSizeProvider>
+          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <ActivityIndicator size="large" color="#0000ff" />
+            <ThemedText>Checking Authentication...</ThemedText>
+          </View>
+        </FontSizeProvider>
+      </ContrastProvider>
     );
   }
 
   return (
-    <FontSizeProvider>
-      <Stack>
-        {isAuthenticated ? (
-          // If the user is authenticated, show the main app (e.g., the tab layout)
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        ) : (
-          // If not authenticated, redirect to the login screen
-          <Stack.Screen name="login" options={{ headerShown: false }} />
-        )}
-      </Stack>
-    </FontSizeProvider>
+    <ContrastProvider>
+      <FontSizeProvider>
+        <Stack>
+          {isAuthenticated ? (
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          ) : (
+            <Stack.Screen name="login" options={{ headerShown: false }} />
+          )}
+        </Stack>
+      </FontSizeProvider>
+    </ContrastProvider>
   );
 }

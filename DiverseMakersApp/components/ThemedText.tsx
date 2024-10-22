@@ -1,6 +1,8 @@
 import { Text, type TextProps, StyleSheet } from 'react-native';
 
 import { useFontSize } from '@/contexts/FontSizeContext';
+import { useContrast } from '@/contexts/ContrastContext';
+import { getColors } from '@/constants/Colors';
 
 export type ThemedTextProps = TextProps & {
   lightColor?: string;
@@ -16,38 +18,40 @@ export function ThemedText({
   ...rest
 }: ThemedTextProps) {
   const { fontSize } = useFontSize();
+  const { highContrastMode } = useContrast();
+  const colors = getColors(highContrastMode);
 
   const getAdjustedFontSize = (baseSize: number) => {
-    return baseSize * (fontSize / 16); // Scale relative to default size
+    return baseSize * (fontSize / 16);
   };
 
   const styles = StyleSheet.create({
     default: {
       fontSize: getAdjustedFontSize(16),
       lineHeight: getAdjustedFontSize(24),
-      color: '#000000', // Set default color to black
+      color: colors.light.text,
     },
     defaultSemiBold: {
       fontSize: getAdjustedFontSize(16),
       lineHeight: getAdjustedFontSize(24),
       fontWeight: '600',
-      color: '#000000',
+      color: colors.light.text,
     },
     title: {
       fontSize: getAdjustedFontSize(32),
       fontWeight: 'bold',
       lineHeight: getAdjustedFontSize(32),
-      color: '#000000',
+      color: colors.light.text,
     },
     subtitle: {
       fontSize: getAdjustedFontSize(20),
       fontWeight: 'bold',
-      color: '#000000',
+      color: colors.light.text,
     },
     link: {
       lineHeight: getAdjustedFontSize(30),
       fontSize: getAdjustedFontSize(16),
-      color: '#0a7ea4', // Keep link color blue
+      color: colors.light.tint,
     },
   });
 

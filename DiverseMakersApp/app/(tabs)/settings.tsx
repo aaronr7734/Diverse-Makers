@@ -12,12 +12,15 @@ import { useRouter } from "expo-router";
 import { useFontSize } from '@/contexts/FontSizeContext';
 import Slider from '@react-native-community/slider';
 import { ThemedText } from '@/components/ThemedText'; // Import ThemedText
+import { useContrast } from '@/contexts/ContrastContext';
+import { getColors } from '@/constants/Colors';
 
 const SettingsPage = () => {
-  const [highContrastMode, setHighContrastMode] = useState(false);
   const [textToSpeech, setTextToSpeech] = useState(false);
   const router = useRouter();
   const { fontSize, setFontSize } = useFontSize();
+  const { highContrastMode, setHighContrastMode } = useContrast();
+  const colors = getColors(highContrastMode);
 
   const handleLogout = async () => {
     console.log("Logout");
@@ -29,11 +32,16 @@ const SettingsPage = () => {
     }
   };
 
+  const handleContrastToggle = (value: boolean) => {
+    console.log('High Contrast Mode:', value); // Debug log
+    setHighContrastMode(value);
+  };
+
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={[styles.container, { backgroundColor: colors.light.background }]}>
       <View style={styles.section}>
         <ThemedText type="subtitle" style={styles.sectionTitle}>General</ThemedText>
-        <TouchableOpacity style={styles.row} onPress={() => {}}>
+        <TouchableOpacity style={[styles.row, { borderBottomColor: colors.light.icon }]} onPress={() => { }}>
           <ThemedText style={styles.rowText}>Theme</ThemedText>
           <ThemedText style={styles.rowText}>Auto</ThemedText>
         </TouchableOpacity>
@@ -42,10 +50,10 @@ const SettingsPage = () => {
       <View style={styles.section}>
         <ThemedText type="subtitle" style={styles.sectionTitle}>Accessibility</ThemedText>
         <View style={styles.row}>
-          <ThemedText style={styles.rowText}>High Contrast Mode</ThemedText>
+          <ThemedText style={styles.rowText}>Increase Contrast</ThemedText>
           <Switch
             value={highContrastMode}
-            onValueChange={setHighContrastMode}
+            onValueChange={handleContrastToggle}
             accessibilityLabel="Toggle high contrast mode"
           />
         </View>
@@ -78,11 +86,11 @@ const SettingsPage = () => {
 
       <View style={styles.section}>
         <ThemedText type="subtitle" style={styles.sectionTitle}>Account</ThemedText>
-        <TouchableOpacity style={styles.row} onPress={() => {}}>
+        <TouchableOpacity style={styles.row} onPress={() => { }}>
           <ThemedText style={styles.rowText}>Edit Profile</ThemedText>
           <ThemedText style={styles.chevron}>›</ThemedText>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.row} onPress={() => {}}>
+        <TouchableOpacity style={styles.row} onPress={() => { }}>
           <ThemedText style={styles.rowText}>Change Password</ThemedText>
           <ThemedText style={styles.chevron}>›</ThemedText>
         </TouchableOpacity>
@@ -90,14 +98,19 @@ const SettingsPage = () => {
 
       <View style={styles.section}>
         <ThemedText type="subtitle" style={styles.sectionTitle}>Notifications</ThemedText>
-        <TouchableOpacity style={styles.row} onPress={() => {}}>
+        <TouchableOpacity style={styles.row} onPress={() => { }}>
           <ThemedText style={styles.rowText}>Preferences</ThemedText>
           <ThemedText style={styles.chevron}>›</ThemedText>
         </TouchableOpacity>
       </View>
 
-      <Button mode="contained" style={styles.logoutButton} onPress={handleLogout}>
-        <ThemedText style={{ color: '#ffffff' }}>Log Out</ThemedText>
+      <Button
+        mode="contained"
+        style={styles.logoutButton}
+        onPress={handleLogout}
+        color={colors.light.tint}
+      >
+        <ThemedText style={{ color: '#fff' }}>Log Out</ThemedText>
       </Button>
     </ScrollView>
   );
@@ -107,7 +120,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#fff",
   },
   section: {
     marginBottom: 20,
@@ -121,13 +133,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#e0e0e0",
   },
   rowText: {
     // fontSize removed as it will be handled by ThemedText
   },
   chevron: {
-    color: "#888",
+    // color will be set dynamically
   },
   logoutButton: {
     marginTop: 20,
@@ -147,7 +158,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   sliderLabel: {
-    color: '#666',
+    // color will be set dynamically
   },
   textSizeRow: {
     alignItems: 'center',
