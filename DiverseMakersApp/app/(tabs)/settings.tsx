@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
   View,
-  Text,
   StyleSheet,
   Switch,
   TouchableOpacity,
@@ -9,19 +8,22 @@ import {
 } from "react-native";
 import { Button } from "react-native-paper";
 import { FIREBASE_AUTH } from "../firebaseConfig";
-import { useRouter } from "expo-router"; // Import useRouter
+import { useRouter } from "expo-router";
+import { useFontSize } from '@/contexts/FontSizeContext';
+import Slider from '@react-native-community/slider';
+import { ThemedText } from '@/components/ThemedText'; // Import ThemedText
 
 const SettingsPage = () => {
   const [highContrastMode, setHighContrastMode] = useState(false);
   const [textToSpeech, setTextToSpeech] = useState(false);
-  const router = useRouter(); // Initialize router
+  const router = useRouter();
+  const { fontSize, setFontSize } = useFontSize();
 
   const handleLogout = async () => {
     console.log("Logout");
     try {
       await FIREBASE_AUTH.signOut();
-      // Navigate to the Login screen
-      router.replace("/login"); // Navigate to the login screen
+      router.replace("/login");
     } catch (error) {
       console.error("Error during sign-out: ", error);
     }
@@ -30,17 +32,17 @@ const SettingsPage = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>General</Text>
+        <ThemedText type="subtitle" style={styles.sectionTitle}>General</ThemedText>
         <TouchableOpacity style={styles.row} onPress={() => {}}>
-          <Text style={styles.rowText}>Theme</Text>
-          <Text style={styles.rowText}>Auto</Text>
+          <ThemedText style={styles.rowText}>Theme</ThemedText>
+          <ThemedText style={styles.rowText}>Auto</ThemedText>
         </TouchableOpacity>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Accessibility</Text>
+        <ThemedText type="subtitle" style={styles.sectionTitle}>Accessibility</ThemedText>
         <View style={styles.row}>
-          <Text style={styles.rowText}>High Contrast Mode</Text>
+          <ThemedText style={styles.rowText}>High Contrast Mode</ThemedText>
           <Switch
             value={highContrastMode}
             onValueChange={setHighContrastMode}
@@ -48,37 +50,54 @@ const SettingsPage = () => {
           />
         </View>
         <View style={styles.row}>
-          <Text style={styles.rowText}>Text-to-Speech</Text>
+          <ThemedText style={styles.rowText}>Text-to-Speech</ThemedText>
           <Switch
             value={textToSpeech}
             onValueChange={setTextToSpeech}
             accessibilityLabel="Toggle text-to-speech"
           />
         </View>
+        <View style={[styles.row, styles.textSizeRow]}>
+          <ThemedText style={styles.rowText}>Text Size</ThemedText>
+          <View style={styles.sliderContainer}>
+            <Slider
+              style={styles.slider}
+              minimumValue={12}
+              maximumValue={24}
+              step={1}
+              value={fontSize}
+              onValueChange={setFontSize}
+            />
+            <View style={styles.sliderLabels}>
+              <ThemedText style={styles.sliderLabel}>Small</ThemedText>
+              <ThemedText style={styles.sliderLabel}>Large</ThemedText>
+            </View>
+          </View>
+        </View>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Account</Text>
+        <ThemedText type="subtitle" style={styles.sectionTitle}>Account</ThemedText>
         <TouchableOpacity style={styles.row} onPress={() => {}}>
-          <Text style={styles.rowText}>Edit Profile</Text>
-          <Text style={styles.chevron}>›</Text>
+          <ThemedText style={styles.rowText}>Edit Profile</ThemedText>
+          <ThemedText style={styles.chevron}>›</ThemedText>
         </TouchableOpacity>
         <TouchableOpacity style={styles.row} onPress={() => {}}>
-          <Text style={styles.rowText}>Change Password</Text>
-          <Text style={styles.chevron}>›</Text>
+          <ThemedText style={styles.rowText}>Change Password</ThemedText>
+          <ThemedText style={styles.chevron}>›</ThemedText>
         </TouchableOpacity>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Notifications</Text>
+        <ThemedText type="subtitle" style={styles.sectionTitle}>Notifications</ThemedText>
         <TouchableOpacity style={styles.row} onPress={() => {}}>
-          <Text style={styles.rowText}>Preferences</Text>
-          <Text style={styles.chevron}>›</Text>
+          <ThemedText style={styles.rowText}>Preferences</ThemedText>
+          <ThemedText style={styles.chevron}>›</ThemedText>
         </TouchableOpacity>
       </View>
 
       <Button mode="contained" style={styles.logoutButton} onPress={handleLogout}>
-        Log Out
+        <ThemedText style={{ color: '#ffffff' }}>Log Out</ThemedText>
       </Button>
     </ScrollView>
   );
@@ -94,8 +113,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
     marginBottom: 10,
   },
   row: {
@@ -107,14 +124,34 @@ const styles = StyleSheet.create({
     borderBottomColor: "#e0e0e0",
   },
   rowText: {
-    fontSize: 16,
+    // fontSize removed as it will be handled by ThemedText
   },
   chevron: {
-    fontSize: 20,
     color: "#888",
   },
   logoutButton: {
     marginTop: 20,
+  },
+  sliderContainer: {
+    flex: 1,
+    marginLeft: 20,
+    maxWidth: 200,
+  },
+  slider: {
+    width: '100%',
+    height: 40,
+  },
+  sliderLabels: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+  },
+  sliderLabel: {
+    color: '#666',
+  },
+  textSizeRow: {
+    alignItems: 'center',
+    paddingVertical: 16,
   },
 });
 

@@ -1,18 +1,19 @@
 // ProfileContainer.tsx
 
 import React, { useEffect, useState } from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 import { FIREBASE_AUTH, FIREBASE_DB } from '../firebaseConfig'; // Import Firestore and Auth services
 import UserProfileScreen from '../userProfile'; // Import your UserProfileScreen component
 import User from '../models/User'; // Import your User model
 import { doc, getDoc } from "firebase/firestore"; // Import the necessary Firestore methods
+import { ThemedText } from '@/components/ThemedText'; // Import ThemedText
 
 // Fetch user profile from Firestore based on UID
 const fetchUserProfile = async (uid: string) => {
   try {
     // Get the document reference for the user
     const userDocRef = doc(FIREBASE_DB, 'users', uid);
-    
+
     // Fetch the document
     const userDoc = await getDoc(userDocRef);
 
@@ -55,7 +56,7 @@ const ProfileContainer = () => {
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Loading user profile...</Text>
+        <ThemedText>Loading user profile...</ThemedText>
       </View>
     );
   }
@@ -63,7 +64,7 @@ const ProfileContainer = () => {
   if (!user) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>No user profile found</Text>
+        <ThemedText>No user profile found</ThemedText>
       </View>
     );
   }

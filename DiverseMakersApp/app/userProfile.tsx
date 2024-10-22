@@ -1,10 +1,11 @@
 // UserProfileScreen.tsx
 
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, FlatList, TextInput, Button } from 'react-native';
+import { View, Image, StyleSheet, FlatList, TextInput, Button } from 'react-native';
 import User from './models/User'; // Import your User model
 import { FIREBASE_AUTH, FIREBASE_DB } from './firebaseConfig'; // Import Firestore configuration
 import { doc, updateDoc } from 'firebase/firestore'; // Import necessary Firestore methods
+import { ThemedText } from '@/components/ThemedText';
 
 interface UserProfileProps {
   user: User; // Assume a user instance is passed as a prop
@@ -37,7 +38,9 @@ const UserProfileScreen = ({ user }: UserProfileProps) => {
       />
 
       {/* Current Username Display */}
-      <Text style={styles.username}>{username || 'No username set'}</Text>
+      <ThemedText type="title" style={styles.username}>
+        {username || 'No username set'}
+      </ThemedText>
 
       {/* Button to Change Username */}
       <Button title="Change Username" onPress={() => setIsEditing(!isEditing)} />
@@ -57,21 +60,29 @@ const UserProfileScreen = ({ user }: UserProfileProps) => {
 
       {/* Email */}
       <View style={styles.infoContainer}>
-        <Text style={styles.infoLabel}>Email:</Text>
-        <Text style={styles.infoValue}>{user.email}</Text>
+        <ThemedText type="defaultSemiBold" style={styles.infoLabel}>
+          Email:
+        </ThemedText>
+        <ThemedText style={styles.infoValue}>{user.email}</ThemedText>
 
         {/* Display Disability Tags if available */}
         {user.disabilityTags && user.disabilityTags.length > 0 ? (
           <>
-            <Text style={styles.infoLabel}>Disability Tags:</Text>
+            <ThemedText type="defaultSemiBold" style={styles.infoLabel}>
+              Disability Tags:
+            </ThemedText>
             <FlatList
               data={user.disabilityTags}
-              renderItem={({ item }) => <Text style={styles.tag}>{item}</Text>}
+              renderItem={({ item }) => (
+                <ThemedText style={styles.tag}>{item}</ThemedText>
+              )}
               keyExtractor={(item, index) => index.toString()}
             />
           </>
         ) : (
-          <Text style={styles.noTagsText}>No disability tags available</Text>
+          <ThemedText style={styles.noTagsText}>
+            No disability tags available
+          </ThemedText>
         )}
       </View>
     </View>
@@ -93,8 +104,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   username: {
-    fontSize: 24,
-    fontWeight: 'bold',
     marginBottom: 16,
   },
   input: {
@@ -110,15 +119,12 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   infoLabel: {
-    fontSize: 16,
     color: '#555',
   },
   infoValue: {
-    fontSize: 18,
     marginBottom: 12,
   },
   tag: {
-    fontSize: 16,
     backgroundColor: '#e0e0e0',
     padding: 8,
     marginVertical: 4,
@@ -126,7 +132,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   noTagsText: {
-    fontSize: 16,
     color: '#888',
     marginTop: 12,
   },

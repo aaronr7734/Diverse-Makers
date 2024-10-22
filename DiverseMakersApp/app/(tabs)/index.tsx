@@ -8,6 +8,7 @@ import { FIREBASE_APP, FIREBASE_AUTH, FIREBASE_DB } from "../firebaseConfig";
 import HomeScreen from "../home";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged, User } from "firebase/auth";
+import { ThemedText } from '@/components/ThemedText';
 
 const Stack = createNativeStackNavigator();
 const InsideStack = createNativeStackNavigator();
@@ -37,22 +38,20 @@ export default function Index() {
 
   return (
     <PaperProvider>
-
       <Stack.Navigator initialRouteName="login">
-        {/* If user is signed in, show home screen */}
         {user ? (
           <Stack.Screen
-          name="home"
-          component={InsideLayout}
-          options={{ headerShown: false }}
-        />) : 
-        // if user not signed in (user is null), show login screen
-        (<Stack.Screen
-          name="login"
-          component={Login}
-          options={{ headerShown: false }}
-        />) }
-        
+            name="home"
+            component={InsideLayout}
+            options={{ headerShown: false }}
+          />
+        ) : (
+          <Stack.Screen
+            name="login"
+            component={Login}
+            options={{ headerShown: false }}
+          />
+        )}
       </Stack.Navigator>
     </PaperProvider>
   );

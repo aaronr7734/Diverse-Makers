@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
+import { ThemedText } from '@/components/ThemedText'; // Import ThemedText
 
 export default function LocalMakerspaceDiscovery() {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Local Makerspace Discovery Screen</Text>
+      <ThemedText>Local Makerspace Discovery Screen</ThemedText>
     </View>
   );
 }
