@@ -4,7 +4,7 @@ import React from 'react';
 
 export default function TabLayout() {
   return (
-    
+
     <Tabs>
       {/* Home Tab */}
       <Tabs.Screen
@@ -14,6 +14,17 @@ export default function TabLayout() {
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home-outline" color={color} size={size} />
+          ),
+        }}
+      />
+
+      {/* Local Makerspace Discovery Tab */}
+      <Tabs.Screen
+        name="localMakerspaceDiscovery"
+        options={{
+          title: 'Makerspaces',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="map-outline" color={color} size={size} />
           ),
         }}
       />
@@ -29,6 +40,16 @@ export default function TabLayout() {
         }}
       />
 
+      {/* Search Tab */}
+      <Tabs.Screen
+        name="search"
+        options={{
+          title: 'Search',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="search-outline" color={color} size={size} />
+          ),
+        }}
+      />
 
       {/* Settings Tab */}
       <Tabs.Screen
