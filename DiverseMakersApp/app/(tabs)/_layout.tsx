@@ -11,14 +11,24 @@ export default function TabLayout() {
         tabBarIcon: ({ color, size }) => {
           let iconName: string;
 
-          if (route.name === "home") {
-            iconName = "home";
-          } else if (route.name === "profile") {
-            iconName = "person";
-          } else if (route.name === "settings") {
-            iconName = "settings";
-          } else {
-            iconName = "ellipse";
+          switch (route.name) {
+            case "home":
+              iconName = "home";
+              break;
+            case "search":
+              iconName = "search";
+              break;
+            case "makerspaces":
+              iconName = "location";
+              break;
+            case "profile":
+              iconName = "person";
+              break;
+            case "settings":
+              iconName = "settings";
+              break;
+            default:
+              iconName = "ellipse";
           }
 
           return <Ionicons name={iconName as any} size={size} color={color} />;
@@ -26,6 +36,8 @@ export default function TabLayout() {
       })}
     >
       <Tabs.Screen name="home" options={{ title: "Home" }} />
+      <Tabs.Screen name="search" options={{ title: "Search" }} />
+      <Tabs.Screen name="makerspaces" options={{ title: "Makerspaces" }} />
       <Tabs.Screen name="profile" options={{ title: "Profile" }} />
       <Tabs.Screen name="settings" options={{ title: "Settings" }} />
     </Tabs>
