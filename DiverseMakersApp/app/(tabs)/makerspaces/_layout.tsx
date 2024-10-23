@@ -2,6 +2,22 @@ import React, { useContext } from "react";
 import { Stack } from "expo-router";
 import { UserSettingsContext } from "../../../contexts/UserSettingsContext";
 
+// types.ts (or in the same file as your component)
+export type RootStackParamList = {
+  Makerspaces: undefined; // No parameters
+  MakerspaceDetails: {
+    makerspace: {
+      name: string;
+      description: string;
+      image: string;
+      contactEmail: string;
+      contactPhone: string;
+      contactAddress: string;
+    };
+  };
+};
+
+
 export default function MakerspacesLayout() {
   const { settings } = useContext(UserSettingsContext);
 
@@ -22,6 +38,12 @@ export default function MakerspacesLayout() {
         name="index"
         options={{
           headerTitle: "Local Makerspaces",
+        }}
+      />
+      <Stack.Screen
+        name="MakerspaceDetails" // Ensure this matches your screen name
+        options={{
+          headerTitle: "Makerspace Details",
         }}
       />
     </Stack>
