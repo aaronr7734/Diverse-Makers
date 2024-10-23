@@ -25,7 +25,6 @@ const HomeScreen: React.FC = () => {
     const fetchActivities = async () => {
       try {
         const fetchedActivities = await ActivityService.getAllActivities();
-        // Filter out any activities with invalid instructions
         const validActivities = fetchedActivities.filter((activity) => {
           const instructions = activity.getInstructions();
           return Array.isArray(instructions);
@@ -56,7 +55,10 @@ const HomeScreen: React.FC = () => {
       elevation: 2,
       backgroundColor: settings.highContrast ? "#000" : "#fff",
       borderRadius: 8,
+    },
+    cardInner: {
       overflow: "hidden",
+      borderRadius: 8,
     },
     coverImage: {
       height: 180,
@@ -116,62 +118,54 @@ const HomeScreen: React.FC = () => {
     },
   });
 
-  /**
-   * Renders each activity item in the list.
-   * @param item - The activity to render.
-   */
   const renderItem = ({ item }: { item: Activity }) => (
     <Card style={styles.card} accessible accessibilityRole="summary">
-      {item.getCoverImageUrl() ? (
-        <Image
-          source={{ uri: item.getCoverImageUrl() }}
-          style={styles.coverImage}
-          accessible
-          accessibilityLabel={
-            item.getCoverImageAltText() || `${item.getTitle()} Cover Image`
-          }
-        />
-      ) : null}
-      <View style={styles.contentContainer}>
-        {/* Activity Title as Heading */}
-        <Text
-          style={[styles.title, { fontSize: settings.fontSize + 4 }]}
-          accessibilityRole="header"
-        >
-          {item.getTitle()}
-        </Text>
-        {/* Activity Description */}
-        <Text
-          style={[styles.description, { fontSize: settings.fontSize }]}
-          accessibilityRole="text"
-        >
-          {item.getDescription()}
-        </Text>
-        {/* "Go to Activity" Link */}
-        <Link
-          href={{
-            pathname: "/home/[activityId]",
-            params: { activityId: item.getActivityId() },
-          }}
-          asChild
-        >
-          <TouchableOpacity
-            style={styles.goToActivityButton}
+      <View style={styles.cardInner}>
+        {item.getCoverImageUrl() ? (
+          <Image
+            source={{ uri: item.getCoverImageUrl() }}
+            style={styles.coverImage}
             accessible
-            accessibilityRole="link"
-            accessibilityLabel={`Go to activity: ${item.getTitle()}`}
-            accessibilityHint={`Navigates to the details of ${item.getTitle()}`}
+            accessibilityLabel={
+              item.getCoverImageAltText() || `${item.getTitle()} Cover Image`
+            }
+          />
+        ) : null}
+        <View style={styles.contentContainer}>
+          <Text
+            style={[styles.title, { fontSize: settings.fontSize + 4 }]}
+            accessibilityRole="header"
           >
-            <Text style={styles.goToActivityText}>Go to Activity</Text>
-          </TouchableOpacity>
-        </Link>
+            {item.getTitle()}
+          </Text>
+          <Text
+            style={[styles.description, { fontSize: settings.fontSize }]}
+            accessibilityRole="text"
+          >
+            {item.getDescription()}
+          </Text>
+          <Link
+            href={{
+              pathname: "/home/[activityId]",
+              params: { activityId: item.getActivityId() },
+            }}
+            asChild
+          >
+            <TouchableOpacity
+              style={styles.goToActivityButton}
+              accessible
+              accessibilityRole="link"
+              accessibilityLabel={`Go to activity: ${item.getTitle()}`}
+              accessibilityHint={`Navigates to the details of ${item.getTitle()}`}
+            >
+              <Text style={styles.goToActivityText}>Go to Activity</Text>
+            </TouchableOpacity>
+          </Link>
+        </View>
       </View>
     </Card>
   );
 
-  /**
-   * Displays a loading indicator while activities are being fetched.
-   */
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -184,9 +178,6 @@ const HomeScreen: React.FC = () => {
     );
   }
 
-  /**
-   * Displays an error message if fetching activities fails.
-   */
   if (error) {
     return (
       <View style={styles.errorContainer}>
@@ -200,9 +191,6 @@ const HomeScreen: React.FC = () => {
     );
   }
 
-  /**
-   * Displays a message if there are no activities available.
-   */
   if (activities.length === 0) {
     return (
       <View style={styles.emptyContainer}>
@@ -217,9 +205,6 @@ const HomeScreen: React.FC = () => {
     );
   }
 
-  /**
-   * Renders the list of activities.
-   */
   return (
     <View style={styles.container}>
       <FlatList
