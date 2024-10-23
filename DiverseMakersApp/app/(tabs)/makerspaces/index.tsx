@@ -17,7 +17,7 @@ const MakerspacesScreen: React.FC = () => {
         "We believe that the citizens of Flagstaff deserve a vibrant hub where innovation, learning, and community spirit can thrive collectively.",
       image:
         "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fimages.squarespace-cdn.com%2Fcontent%2Fv1%2F664f72a63b7d6431711fcaff%2F3dded19e-8596-472a-b19d-cdfc834d2a2e%2FCoco-Op%2BSocial%2BProfile%2BPhoto.jpg%3Fformat%3D1500w&f=1&nofb=1&ipt=60086247dbb55990415f641d50f00524b0ef6d5c50288ba6fa84c2a5e477249e&ipo=images",
-      contactEmail: "Unavailable",
+      contactEmail: "team@cocoop.org",
       contactPhone: "928-351-7071",
       contactAddress: "1155 W Kaibab Lane Flagstaff, AZ 86001",
     },
