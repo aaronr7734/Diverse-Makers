@@ -8,7 +8,7 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
-import { Text, Card, useTheme } from "react-native-paper";
+import { Text, Card, useTheme, Button } from "react-native-paper";
 import { ActivityService } from "../../services/ActivityService";
 import Activity from "../../models/Activity";
 import { UserSettingsContext } from "../../../contexts/UserSettingsContext";
@@ -52,23 +52,39 @@ const HomeScreen: React.FC = () => {
       paddingHorizontal: 16,
     },
     card: {
-      marginBottom: 16,
+      marginBottom: 24,
       elevation: 2,
       backgroundColor: settings.highContrast ? "#000" : "#fff",
+      borderRadius: 8,
+      overflow: "hidden",
     },
     coverImage: {
-      height: 200,
-      borderTopLeftRadius: 4,
-      borderTopRightRadius: 4,
+      height: 180,
+      width: "100%",
+    },
+    contentContainer: {
+      padding: 16,
     },
     title: {
-      marginTop: 8,
+      marginBottom: 8,
       fontWeight: "bold",
       color: settings.highContrast ? "#fff" : "#333",
     },
     description: {
-      marginTop: 4,
       color: settings.highContrast ? "#fff" : "#555",
+      marginBottom: 12,
+    },
+    goToActivityButton: {
+      alignSelf: "flex-start",
+      paddingVertical: 6,
+      paddingHorizontal: 12,
+      borderRadius: 4,
+      borderWidth: 1,
+      borderColor: theme.colors.primary,
+    },
+    goToActivityText: {
+      color: theme.colors.primary,
+      fontSize: settings.fontSize,
     },
     loadingContainer: {
       flex: 1,
@@ -100,51 +116,62 @@ const HomeScreen: React.FC = () => {
     },
   });
 
+  /**
+   * Renders each activity item in the list.
+   * @param item - The activity to render.
+   */
   const renderItem = ({ item }: { item: Activity }) => (
-    <Link
-      href={{
-        pathname: "/home/[activityId]",
-        params: { activityId: item.getActivityId() },
-      }}
-      asChild
-    >
-      <TouchableOpacity
-        accessible
-        accessibilityLabel={`View details for ${item.getTitle()}`}
-        accessibilityHint="Navigates to activity details"
-      >
-        <Card style={styles.card}>
-          {item.getCoverImageUrl() ? (
-            <Image
-              source={{ uri: item.getCoverImageUrl() }}
-              style={styles.coverImage}
-              accessible
-              accessibilityLabel={
-                item.getCoverImageAltText() || `${item.getTitle()} Cover Image`
-              }
-            />
-          ) : null}
-          <Card.Content>
-            <Text
-              style={[styles.title, { fontSize: settings.fontSize + 4 }]}
-              numberOfLines={1}
-              accessible
-            >
-              {item.getTitle()}
-            </Text>
-            <Text
-              style={[styles.description, { fontSize: settings.fontSize }]}
-              numberOfLines={2}
-              accessible
-            >
-              {item.getDescription()}
-            </Text>
-          </Card.Content>
-        </Card>
-      </TouchableOpacity>
-    </Link>
+    <Card style={styles.card} accessible accessibilityRole="summary">
+      {item.getCoverImageUrl() ? (
+        <Image
+          source={{ uri: item.getCoverImageUrl() }}
+          style={styles.coverImage}
+          accessible
+          accessibilityLabel={
+            item.getCoverImageAltText() || `${item.getTitle()} Cover Image`
+          }
+        />
+      ) : null}
+      <View style={styles.contentContainer}>
+        {/* Activity Title as Heading */}
+        <Text
+          style={[styles.title, { fontSize: settings.fontSize + 4 }]}
+          accessibilityRole="header"
+        >
+          {item.getTitle()}
+        </Text>
+        {/* Activity Description */}
+        <Text
+          style={[styles.description, { fontSize: settings.fontSize }]}
+          accessibilityRole="text"
+        >
+          {item.getDescription()}
+        </Text>
+        {/* "Go to Activity" Link */}
+        <Link
+          href={{
+            pathname: "/home/[activityId]",
+            params: { activityId: item.getActivityId() },
+          }}
+          asChild
+        >
+          <TouchableOpacity
+            style={styles.goToActivityButton}
+            accessible
+            accessibilityRole="link"
+            accessibilityLabel={`Go to activity: ${item.getTitle()}`}
+            accessibilityHint={`Navigates to the details of ${item.getTitle()}`}
+          >
+            <Text style={styles.goToActivityText}>Go to Activity</Text>
+          </TouchableOpacity>
+        </Link>
+      </View>
+    </Card>
   );
 
+  /**
+   * Displays a loading indicator while activities are being fetched.
+   */
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -157,6 +184,9 @@ const HomeScreen: React.FC = () => {
     );
   }
 
+  /**
+   * Displays an error message if fetching activities fails.
+   */
   if (error) {
     return (
       <View style={styles.errorContainer}>
@@ -170,6 +200,9 @@ const HomeScreen: React.FC = () => {
     );
   }
 
+  /**
+   * Displays a message if there are no activities available.
+   */
   if (activities.length === 0) {
     return (
       <View style={styles.emptyContainer}>
@@ -184,6 +217,9 @@ const HomeScreen: React.FC = () => {
     );
   }
 
+  /**
+   * Renders the list of activities.
+   */
   return (
     <View style={styles.container}>
       <FlatList

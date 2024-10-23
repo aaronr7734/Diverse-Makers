@@ -17,18 +17,18 @@ interface BaseContentBlock {
   applicableDisabilities: string[];
 }
 
-interface TextContentBlock extends BaseContentBlock {
+export interface TextContentBlock extends BaseContentBlock {
   type: "text";
   content: string;
 }
 
-interface ImageContentBlock extends BaseContentBlock {
+export interface ImageContentBlock extends BaseContentBlock {
   type: "image";
   url: string;
   altText: string;
 }
 
-interface MediaContentBlock extends BaseContentBlock {
+export interface MediaContentBlock extends BaseContentBlock {
   type: "video" | "audio" | "link";
   url: string;
   description?: string;
