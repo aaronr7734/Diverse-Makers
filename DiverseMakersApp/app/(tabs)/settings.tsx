@@ -2,10 +2,14 @@ import React, { useContext } from "react";
 import { View, StyleSheet, SafeAreaView } from "react-native";
 import { Text, Switch, useTheme, Button } from "react-native-paper";
 import { UserSettingsContext } from "../../contexts/UserSettingsContext";
+import { useRouter } from "expo-router";
+import { signOut } from "firebase/auth";
+import { FIREBASE_AUTH } from "../firebaseConfig";
 
 const SettingsScreen: React.FC = () => {
   const { settings, updateSettings } = useContext(UserSettingsContext);
   const theme = useTheme();
+  const router = useRouter();
 
   const increaseFontSize = () => {
     if (settings.fontSize < 24) {
@@ -27,8 +31,17 @@ const SettingsScreen: React.FC = () => {
     // This can stay if it's working, otherwise we can use accessibilityLiveRegion
   };
 
+  const handleLogout = async () => {
+    try {
+      await signOut(FIREBASE_AUTH);
+      router.replace("/login");
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
+
   return (
-    <SafeAreaView 
+    <SafeAreaView
       style={[
         styles.safeArea,
         { backgroundColor: settings.highContrast ? "#000" : "#fff" }
@@ -40,7 +53,7 @@ const SettingsScreen: React.FC = () => {
           style={[
             styles.title,
             {
-              fontSize: settings.fontSize + 8,
+              fontSize: settings.fontSize + 4,
               color: settings.highContrast ? "#fff" : "#000",
             },
           ]}
@@ -62,7 +75,7 @@ const SettingsScreen: React.FC = () => {
           >
             Font Size
           </Text>
-          
+
           {/* Increase or decrease font size */}
           <View style={styles.fontSizeControls}>
             <Button
@@ -79,7 +92,7 @@ const SettingsScreen: React.FC = () => {
             >
               A-
             </Button>
-            
+
             {/* Display for current font size */}
             <View style={styles.fontSizeDisplayContainer}>
               <Text
@@ -126,7 +139,7 @@ const SettingsScreen: React.FC = () => {
                 },
               ]}
             >
-              High Contrast Mode
+              Increase Contrast
             </Text>
             <Switch
               value={settings.highContrast}
@@ -137,6 +150,22 @@ const SettingsScreen: React.FC = () => {
               accessibilityState={{ checked: settings.highContrast }}
             />
           </View>
+        </View>
+
+        <View style={styles.section}>
+          <Button
+            mode="contained"
+            onPress={handleLogout}
+            style={styles.logoutButton}
+            labelStyle={{
+              color: settings.highContrast ? "#000" : "#fff",
+              fontSize: settings.fontSize,
+            }}
+            accessibilityLabel="Log out"
+            accessibilityHint="Signs you out of your account"
+          >
+            Log Out
+          </Button>
         </View>
       </View>
     </SafeAreaView>
@@ -194,6 +223,10 @@ const styles = StyleSheet.create({
   settingLabel: {
     flex: 1,
     marginRight: 16,
+  },
+  logoutButton: {
+    marginTop: 8,
+    borderRadius: 8,
   },
 });
 
