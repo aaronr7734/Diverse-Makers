@@ -25,10 +25,10 @@ const MakerspacesScreen: React.FC = () => {
       name: "Tynkertopia",
       description:
         "Tynkertopia is a non-profit Community Center focusing on creativity, inquiry, and STEM/STEAM skills for kids, parents, teachers, and community members!",
-      image: "https://example.com/image2.jpg",
+      image: "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.tynkertopia.org%2Fwp-content%2Fuploads%2F2023%2F03%2F4x6_Transparent-Cropped.png&f=1&nofb=1&ipt=6a8b2534288632179e1a4ed9c547ad7d6be40989e5e791e618f455eb07389442&ipo=images",
       contactEmail: "info@tynkertopia.org",
       contactPhone: "928-326-3400",
-      contactAddress: "3330 E Elder Drive, Flagstaff, Az, 86004",
+      contactAddress: "3330 E Elder Drive, Flagstaff, AZ, 86004",
     },
   ];
 
@@ -155,6 +155,7 @@ const styles = StyleSheet.create({
     height: 150,
     borderRadius: 5,
     marginBottom: 10,
+    resizeMode: 'contain'
   },
   itemName: {
     fontWeight: "bold",
