@@ -152,6 +152,7 @@ const SettingsScreen: React.FC = () => {
           </View>
         </View>
 
+        {/* Logout Section */}
         <View style={styles.section}>
           <Button
             mode="contained"
@@ -164,7 +165,7 @@ const SettingsScreen: React.FC = () => {
             accessibilityLabel="Log out"
             accessibilityHint="Signs you out of your account"
           >
-            Log Out
+            Sign Out
           </Button>
         </View>
       </View>
