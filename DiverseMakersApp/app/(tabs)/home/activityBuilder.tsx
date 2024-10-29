@@ -15,6 +15,7 @@ import InstructionBuilder from "../../utils/InstructionBuilder";
 import Activity, { InstructionStep } from "../../models/Activity";
 import { ActivityService } from "../../services/ActivityService";
 import { v4 as uuidv4 } from "uuid";
+import "react-native-get-random-values";
 
 const ActivityBuilderScreen: React.FC = () => {
   const { settings } = useContext(UserSettingsContext);
