@@ -1,5 +1,6 @@
 import { Timestamp } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
+import User from "../models/User";
 
 /**
  * Represents a content block within an instruction step.

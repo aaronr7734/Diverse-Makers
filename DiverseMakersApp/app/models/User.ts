@@ -1,4 +1,4 @@
-import { Timestamp } from "firebase/firestore";
+import { doc, getDoc, getFirestore, Timestamp } from "firebase/firestore";
 
 /**
  * Represents a user in the application.

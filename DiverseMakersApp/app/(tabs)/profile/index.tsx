@@ -1,14 +1,35 @@
-import React, { useContext } from "react";
-import { View, StyleSheet, Image, Pressable } from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+import { View, StyleSheet, Image, Pressable, FlatList } from "react-native";
 import { Text } from "react-native-paper";
 import { UserSettingsContext } from "../../../contexts/UserSettingsContext";
 import { AuthContext } from "../../../contexts/AuthContext";
 import { useRouter } from "expo-router";
+import { ActivityService } from "../../services/ActivityService";
+import  Activity  from "../../models/Activity"; // Ensure correct path for Activity model
 
 const UserProfileScreen: React.FC = () => {
   const { settings } = useContext(UserSettingsContext);
   const { user } = useContext(AuthContext);
+  const [userActivities, setUserActivities] = useState<Activity[]>([]);
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchUserActivities = async () => {
+      if (user) {
+        try {
+          const allActivities = await ActivityService.getAllActivities();
+          const createdActivities = allActivities.filter(
+            (activity: Activity) => activity.getCreatedBy() === user.userId
+          );
+          setUserActivities(createdActivities);
+        } catch (error) {
+          console.error("Error fetching activities:", error);
+        }
+      }
+    };
+
+    fetchUserActivities();
+  }, [user]);
 
   if (!user) {
     return (
@@ -43,7 +64,7 @@ const UserProfileScreen: React.FC = () => {
     >
       {/* Profile Image */}
       <Image
-        source={require("../../assets/default-profile.png")} // Adjust the path as needed
+        source={require("../../assets/default-profile.png")}
         style={styles.profileImage}
         accessible
         accessibilityLabel="Profile Picture"
@@ -134,6 +155,51 @@ const UserProfileScreen: React.FC = () => {
           Edit Profile
         </Text>
       </Pressable>
+      {/* List of User's Activities */}
+      <Text
+        style={[
+          styles.sectionTitle,
+          { fontSize: settings.fontSize + 2, color: settings.highContrast ? "#fff" : "#000" },
+        ]}
+      >
+        My Activities
+      </Text>
+      <FlatList
+        data={userActivities}
+        keyExtractor={(item) => item.getActivityId()}
+        renderItem={({ item }) => (
+          <View style={styles.activityItem}>
+            <Text
+              style={{
+                fontSize: settings.fontSize,
+                color: settings.highContrast ? "#fff" : "#000",
+              }}
+            >
+              {item.getTitle()}
+            </Text>
+            <Text
+              style={{
+                fontSize: settings.fontSize - 2,
+                color: settings.highContrast ? "#aaa" : "#555",
+              }}
+            >
+              {item.getDescription()}
+            </Text>
+          </View>
+        )}
+        ListEmptyComponent={
+          <Text
+            style={{
+              fontSize: settings.fontSize,
+              color: settings.highContrast ? "#fff" : "#555",
+              textAlign: "center",
+              marginTop: 20,
+            }}
+          >
+            No activities created yet.
+          </Text>
+        }
+      />
     </View>
   );
 };
@@ -190,5 +256,16 @@ const styles = StyleSheet.create({
     width: "80%",
     borderRadius: 4,
     borderWidth: 1,
+  },
+  sectionTitle: {
+    marginTop: 20,
+    fontWeight: "bold",
+  },
+  activityItem: {
+    backgroundColor: "#f0f0f0",
+    padding: 12,
+    marginVertical: 8,
+    borderRadius: 8,
+    width: "100%",
   },
 });
