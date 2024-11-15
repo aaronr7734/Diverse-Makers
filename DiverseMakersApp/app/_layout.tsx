@@ -1,15 +1,18 @@
 import React, { useEffect } from "react";
 import { Stack, useRouter, usePathname } from "expo-router";
+import { PaperProvider } from 'react-native-paper';
 import { AuthProvider, useAuth } from "../contexts/AuthContext";
 import { UserSettingsProvider } from "../contexts/UserSettingsContext";
 
 export default function RootLayout() {
   return (
+    <PaperProvider>
     <AuthProvider>
       <UserSettingsProvider>
         <RootNavigator />
       </UserSettingsProvider>
     </AuthProvider>
+    </PaperProvider>
   );
 }
 

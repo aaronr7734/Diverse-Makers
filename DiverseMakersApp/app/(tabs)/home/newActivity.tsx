@@ -13,6 +13,7 @@ import {
   Checkbox,
   Button,
   useTheme,
+  Chip,
 } from "react-native-paper";
 import { UserSettingsContext } from "../../../contexts/UserSettingsContext";
 import { AuthContext } from "../../../contexts/AuthContext";
@@ -31,11 +32,17 @@ const NewActivityScreen: React.FC = () => {
   const [isApplicableToAll, setIsApplicableToAll] = useState(true);
 
   const handleAddTag = () => {
-    const trimmedTag = currentTag.trim();
-    if (trimmedTag && !tags.includes(trimmedTag)) {
-      setTags([...tags, trimmedTag]);
-      setCurrentTag("");
+    const trimmedTag = currentTag.trim().toLowerCase();
+    if (!trimmedTag) {
+      Alert.alert("Validation Error", "Tag cannot be empty.");
+      return;
     }
+    if (tags.includes(trimmedTag)) {
+      Alert.alert("Validation Error", "This tag already exists.");
+      return;
+    }
+    setTags([...tags, trimmedTag]);
+    setCurrentTag("");
   };
 
   const handleRemoveTag = (tagToRemove: string) => {
@@ -53,7 +60,6 @@ const NewActivityScreen: React.FC = () => {
       return;
     }
 
-    // Navigate to the Activity Builder screen with the activity data
     router.push({
       pathname: "/home/activityBuilder",
       params: {
@@ -63,6 +69,62 @@ const NewActivityScreen: React.FC = () => {
       },
     });
   };
+
+  const styles = StyleSheet.create({
+    keyboardContainer: {
+      flex: 1,
+    },
+    container: {
+      flexGrow: 1,
+      padding: 16,
+    },
+    title: {
+      textAlign: "center",
+      marginBottom: 24,
+    },
+    input: {
+      marginBottom: 16,
+    },
+    tagsSection: {
+      marginBottom: 16,
+    },
+    tagInput: {
+      marginBottom: 8,
+    },
+    tagHeader: {
+      fontSize: settings.fontSize,
+      color: settings.highContrast ? "#fff" : "#000",
+      marginBottom: 8,
+      fontWeight: "bold",
+    },
+    tagsContainer: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      marginTop: 8,
+      marginBottom: 8,
+    },
+    chip: {
+      margin: 4,
+    },
+    addTagButton: {
+      alignSelf: "flex-start",
+      marginBottom: 16,
+    },
+    checkboxContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginBottom: 24,
+    },
+    nextButton: {
+      borderRadius: 4,
+      paddingVertical: 12,
+    },
+    noTagsText: {
+      color: settings.highContrast ? "#fff" : "#666",
+      fontStyle: "italic",
+      marginBottom: 8,
+    },
+  });
 
   return (
     <KeyboardAvoidingView
@@ -88,17 +150,12 @@ const NewActivityScreen: React.FC = () => {
         >
           Create New Activity
         </Text>
-        {/* Activity Title Input */}
+
         <TextInput
           label="Activity Title"
           value={title}
           onChangeText={setTitle}
-          style={[
-            styles.input,
-            {
-              backgroundColor: settings.highContrast ? "#000" : "#fff",
-            },
-          ]}
+          style={styles.input}
           placeholder="Enter the activity title"
           placeholderTextColor={settings.highContrast ? "#fff" : "#aaa"}
           accessible
@@ -111,17 +168,12 @@ const NewActivityScreen: React.FC = () => {
             },
           }}
         />
-        {/* Activity Description Input */}
+
         <TextInput
-          label="Description (Optional)"
+          label="Description"
           value={description}
           onChangeText={setDescription}
-          style={[
-            styles.input,
-            {
-              backgroundColor: settings.highContrast ? "#000" : "#fff",
-            },
-          ]}
+          style={styles.input}
           placeholder="Enter a brief description"
           placeholderTextColor={settings.highContrast ? "#fff" : "#aaa"}
           accessible
@@ -136,59 +188,64 @@ const NewActivityScreen: React.FC = () => {
             },
           }}
         />
-        {/* Tags Input */}
-        <TextInput
-          label="Add Tag"
-          value={currentTag}
-          onChangeText={setCurrentTag}
-          style={[
-            styles.input,
-            {
-              backgroundColor: settings.highContrast ? "#000" : "#fff",
-            },
-          ]}
-          placeholder="e.g., Science, Math"
-          placeholderTextColor={settings.highContrast ? "#fff" : "#aaa"}
-          onSubmitEditing={handleAddTag}
-          returnKeyType="done"
-          accessible
-          accessibilityLabel="Add Tag Input"
-          theme={{
-            colors: {
-              text: settings.highContrast ? "#fff" : "#000",
-              placeholder: settings.highContrast ? "#fff" : "#aaa",
-              primary: settings.highContrast ? "#fff" : theme.colors.primary,
-            },
-          }}
-        />
-        {/* Display Tags */}
-        <View style={styles.tagsContainer}>
-          {tags.map((tag, index) => (
-            <Button
-              key={index}
-              mode="outlined"
-              onPress={() => handleRemoveTag(tag)}
-              style={[
-                styles.tagButton,
-                {
-                  borderColor: settings.highContrast
-                    ? "#fff"
-                    : theme.colors.primary,
-                },
-              ]}
-              labelStyle={{
-                color: settings.highContrast ? "#fff" : theme.colors.primary,
-                fontSize: settings.fontSize - 2,
-              }}
-              accessible
-              accessibilityRole="button"
-              accessibilityLabel={`Tag: ${tag}, double tap to remove`}
-            >
-              {tag}
-            </Button>
-          ))}
+
+        <View style={styles.tagsSection}>
+          <Text style={styles.tagHeader} accessibilityRole="header">
+            Activity Tags
+          </Text>
+
+          <TextInput
+            label="Add Tag"
+            value={currentTag}
+            onChangeText={setCurrentTag}
+            style={styles.tagInput}
+            placeholder="e.g., science, math, electronics"
+            placeholderTextColor={settings.highContrast ? "#fff" : "#aaa"}
+            returnKeyType="done"
+            onSubmitEditing={handleAddTag}
+            accessible
+            accessibilityLabel="Add Tag Input"
+            theme={{
+              colors: {
+                text: settings.highContrast ? "#fff" : "#000",
+                placeholder: settings.highContrast ? "#fff" : "#aaa",
+                primary: settings.highContrast ? "#fff" : theme.colors.primary,
+              },
+            }}
+          />
+
+          <Button
+            mode="outlined"
+            onPress={handleAddTag}
+            style={styles.addTagButton}
+            disabled={!currentTag.trim()}
+            accessibilityLabel="Add Tag Button"
+            accessibilityHint="Adds the current tag to the activity"
+          >
+            Add Tag
+          </Button>
+
+          {tags.length === 0 ? (
+            <Text style={styles.noTagsText}>
+              No tags added yet. Tags help make your activity discoverable!
+            </Text>
+          ) : (
+            <View style={styles.tagsContainer}>
+              {tags.map((tag) => (
+                <Chip
+                  key={tag}
+                  onClose={() => handleRemoveTag(tag)}
+                  style={styles.chip}
+                  textStyle={{ fontSize: settings.fontSize - 2 }}
+                  accessibilityLabel={`${tag} tag, double tap to remove`}
+                >
+                  {tag}
+                </Chip>
+              ))}
+            </View>
+          )}
         </View>
-        {/* Applicable Disabilities Checkbox */}
+
         <View style={styles.checkboxContainer}>
           <Checkbox
             status={isApplicableToAll ? "checked" : "unchecked"}
@@ -205,18 +262,11 @@ const NewActivityScreen: React.FC = () => {
             Applicable to all disabilities
           </Text>
         </View>
-        {/* Next Button */}
+
         <Button
           mode="contained"
           onPress={handleSubmit}
-          style={[
-            styles.nextButton,
-            {
-              backgroundColor: settings.highContrast
-                ? "#fff"
-                : theme.colors.primary,
-            },
-          ]}
+          style={styles.nextButton}
           labelStyle={{
             color: settings.highContrast ? "#000" : "#fff",
             fontSize: settings.fontSize,
@@ -233,41 +283,3 @@ const NewActivityScreen: React.FC = () => {
 };
 
 export default NewActivityScreen;
-
-const styles = StyleSheet.create({
-  keyboardContainer: {
-    flex: 1,
-  },
-  container: {
-    flexGrow: 1,
-    padding: 16,
-    justifyContent: "center",
-  },
-  title: {
-    textAlign: "center",
-    marginBottom: 24,
-  },
-  input: {
-    marginBottom: 16,
-  },
-  tagsContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    marginBottom: 16,
-  },
-  tagButton: {
-    marginRight: 8,
-    marginBottom: 8,
-    borderRadius: 16,
-    borderWidth: 1,
-  },
-  checkboxContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 24,
-  },
-  nextButton: {
-    borderRadius: 4,
-    paddingVertical: 12,
-  },
-});
