@@ -20,6 +20,7 @@ export default function HomeLayout() {
           fontSize: settings.fontSize + 4,
         },
         headerTintColor: settings.highContrast ? "#fff" : "#000",
+        
       }}
     >
       <Stack.Screen

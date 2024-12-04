@@ -189,7 +189,7 @@ const SearchScreen: React.FC = () => {
       AccessibilityInfo.announceForAccessibility(
         `Found ${filtered.length} activities`
       );
-      resultsRef.current?.focus();
+      //resultsRef.current?.focus();
     } catch (err) {
       setUiState(prev => ({
         ...prev,
@@ -222,7 +222,7 @@ const SearchScreen: React.FC = () => {
       hasMore: true,
     });
     AccessibilityInfo.announceForAccessibility("Search cleared");
-    searchInputRef.current?.focus();
+    //searchInputRef.current?.focus();
   };
 
   const styles = StyleSheet.create({
