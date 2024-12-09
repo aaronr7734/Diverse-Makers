@@ -4,7 +4,7 @@ import { Text } from "react-native-paper";
 import { UserSettingsContext } from "../../../contexts/UserSettingsContext";
 import { AuthContext } from "../../../contexts/AuthContext";
 import { useRouter } from "expo-router";
-import { ActivityService } from "../../services/ActivityService";
+import { ActivityService } from "../../../services/ActivityService";
 import  Activity  from "../../models/Activity"; // Ensure correct path for Activity model
 
 const UserProfileScreen: React.FC = () => {

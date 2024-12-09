@@ -1,4 +1,4 @@
-import { InstructionContentBlock } from "../../../models/Activity";
+import { InstructionContentBlock } from "../app/models/Activity";
 
 export interface ContentTypeOption {
   value: "text" | "image" | "video";

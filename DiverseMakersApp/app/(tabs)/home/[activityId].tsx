@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { View, StyleSheet, ScrollView, ActivityIndicator } from "react-native";
 import { Text, useTheme, Button } from "react-native-paper";
-import { ActivityService } from "../../services/ActivityService";
+import { ActivityService } from "../../../services/ActivityService";
 import Activity from "../../models/Activity";
 import ActivityDisplay from "../../activityDisplay";
 import { UserSettingsContext } from "../../../contexts/UserSettingsContext";

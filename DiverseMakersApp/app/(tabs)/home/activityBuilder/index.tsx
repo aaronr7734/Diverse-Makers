@@ -5,7 +5,7 @@ import { UserSettingsContext } from "../../../../contexts/UserSettingsContext";
 import { AuthContext } from "../../../../contexts/AuthContext";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import Activity, { InstructionStep } from "../../../models/Activity";
-import { ActivityService } from "../../../services/ActivityService";
+import { ActivityService } from "../../../../services/ActivityService";
 import ContentBlockModal from "./ContentBlockModal";
 import StepList from "./StepList";
 import { v4 as uuidv4 } from "uuid";

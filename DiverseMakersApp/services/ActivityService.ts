@@ -1,4 +1,4 @@
-import { FIREBASE_DB } from "../firebaseConfig";
+import { FIREBASE_DB } from "../app/firebaseConfig";
 import {
   collection,
   addDoc,
@@ -10,7 +10,7 @@ import {
   deleteDoc,
   Timestamp,
 } from "firebase/firestore";
-import Activity from "../models/Activity";
+import Activity from "../app/models/Activity";
 
 export class ActivityService {
   /**

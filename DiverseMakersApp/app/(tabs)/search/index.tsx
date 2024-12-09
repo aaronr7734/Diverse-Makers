@@ -13,7 +13,7 @@ import {
   Checkbox,
 } from "react-native-paper";
 import { UserSettingsContext } from "../../../contexts/UserSettingsContext";
-import { ActivityService } from "../../services/ActivityService";
+import { ActivityService } from "../../../services/ActivityService";
 import { AccessibilityInfo } from "react-native";
 import Activity from "../../models/Activity";
 import SearchResults from "./SearchResults";

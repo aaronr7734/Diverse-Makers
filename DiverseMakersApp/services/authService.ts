@@ -1,11 +1,11 @@
-import { FIREBASE_AUTH, FIREBASE_DB } from "../firebaseConfig";
+import { FIREBASE_AUTH, FIREBASE_DB } from "../app/firebaseConfig";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   UserCredential,
 } from "firebase/auth";
 import { doc, setDoc, Timestamp } from "firebase/firestore";
-import User from "../models/User";
+import User from "../app/models/User";
 
 /**
  * Sign In Function

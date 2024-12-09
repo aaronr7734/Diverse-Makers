@@ -9,7 +9,7 @@ import {
   Alert,
 } from "react-native";
 import { Text, Card, useTheme, Button } from "react-native-paper";
-import { ActivityService } from "../../services/ActivityService";
+import { ActivityService } from "../../../services/ActivityService";
 import Activity from "../../models/Activity";
 import { UserSettingsContext } from "../../../contexts/UserSettingsContext";
 import { Link } from "expo-router";

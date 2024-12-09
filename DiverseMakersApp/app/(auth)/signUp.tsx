@@ -12,7 +12,7 @@ import {
   useTheme,
   HelperText,
 } from "react-native-paper";
-import { signUp } from "../services/authService";
+import { signUp } from "../../services/authService";
 import { UserSettingsContext } from "../../contexts/UserSettingsContext";
 import { Link } from "expo-router";
 import authStyles from "../styles/authStyles";
