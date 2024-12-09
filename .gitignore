@@ -30,9 +30,6 @@ coverage
 # Bower dependency directory (https://bower.io/)
 bower_components
 
-# Lock files
-yarn.lock
-package-lock.json
 
 # Gatsby files
 .cache/
@@ -54,7 +51,6 @@ Thumbs.db
 # React Native temp files
 *.orig
 .bundle/
-metro.config.js
 
 # dotenv environment variables file
 .env
